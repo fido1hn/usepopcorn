@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import StarRating from "./components/StarRating";
-import { useMovies } from "./useMovies";
+import { useMovies } from "./hooks/useMovies";
+import { useLocalStorageState } from "./hooks/useLocalStorageState";
 
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
@@ -12,12 +13,16 @@ export default function App() {
   const [selectedId, setSelectedId] = useState(null);
 
   const { error, isLoading, movies } = useMovies(query, handleCloseMovie);
+  const [watched, setWatched] = useLocalStorageState([], "watched");
 
-  // const [watched, setWatched] = useState([]);
+  /*
+  const [watched, setWatched] = useState([]);
   const [watched, setWatched] = useState(function () {
     const watchedValues = localStorage.getItem("watched");
     return JSON.parse(watchedValues);
   });
+  */
+
   /* 
   useEffect(function () {
     console.log("After intial render only");
@@ -52,13 +57,6 @@ export default function App() {
   function handleDeleteWatched(id) {
     setWatched((watched) => watched.filter((movie) => movie.imdbID !== id));
   }
-
-  useEffect(
-    function () {
-      localStorage.setItem("watched", JSON.stringify(watched));
-    },
-    [watched]
-  );
 
   return (
     <>
@@ -425,7 +423,7 @@ function WatchedSummary({ watched }) {
         </p>
         <p>
           <span>⏳</span>
-          <span>{avgRuntime} min</span>
+          <span>{avgRuntime.toFixed(2)} min</span>
         </p>
       </div>
     </div>
